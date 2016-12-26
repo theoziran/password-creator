@@ -1,0 +1,13 @@
+{
+    "name": "theoziran/password-creator",
+    "require-dev": {
+        "phpunit/phpunit": "^5.7"
+    },
+    "authors": [
+        {
+            "name": "Theoziran Lima",
+            "email": "theoziran@gmail.com"
+        }
+    ],
+    "require": {}
+}
