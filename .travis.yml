@@ -1,0 +1,9 @@
+language: php
+php:
+  - '5.6'
+  - '7.0'
+install: composer install
+script: phpunit --bootstrap test/bootstrap.php --no-configuration test
+branches:
+  only:
+  - master
