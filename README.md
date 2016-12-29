@@ -2,7 +2,7 @@
 
 ## Getting started
 
-```
+```php
 <?php
 $config = [
     'strength' => 10,
