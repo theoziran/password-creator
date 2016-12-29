@@ -1,10 +1,5 @@
-# PHP Password Creator [![Build Status](https://travis-ci.org/theoziran/password-creator.svg?branch=master)](https://travis-ci.org/theoziran/password-creator)
-
-## Getting started
-
-```
 <?php
-$config = [
+return [
     'strength' => 10,
     'complexity' => 10,
     'specialCharacter' => '~!@#$%^&*_-+=`|(){}[]:;"\'<>,.?/',
@@ -28,10 +23,3 @@ $config = [
         'Puzzle\Rules\Compliance',
     ]
 ];
-
-
-$this->passwordGenerator = new PasswordGenerator($config);
-$password = $this->passwordGenerator->getPassword();
-
-
-```
