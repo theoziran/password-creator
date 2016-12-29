@@ -1,7 +1,7 @@
 <?php
 return [
-    'strength' => 10,
-    'complexity' => 10,
+    'strength' => 1,
+    'complexity' => 1,
     'specialCharacter' => '~!@#$%^&*_-+=`|(){}[]:;"\'<>,.?/',
     'map' => [
         'a' => ['@','4'],

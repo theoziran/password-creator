@@ -1,7 +1,9 @@
 <?php
 namespace Puzzle;
 
-use Puzzle\Rules\RuleAbstract;
+use Puzzle\Exception\ConfigParserException;
+use Puzzle\Exception\ConfigComplexityOutOfBound;
+use Puzzle\Rules\RuleInterface;
 
 class PasswordGenerator
 {
@@ -11,19 +13,20 @@ class PasswordGenerator
     const CONFIG_STRENGTH = 'strength';
     const CONFIG_WORDS = 'words';
     const CONFIG_SPECIAL_CHARS = 'specialCharacter';
+    const CONFIG_COMPLEXITY = 'complexity';
 
-    private $_strength;
+    private $strength;
 
-    private $_rules = [];
+    private $rules = [];
 
-    private $_words;
+    private $words = [];
 
-    private $_config = [];
+    private $config = [];
 
     public function __construct($config)
     {
-        $this->_verifyRequiredConfig($config);
-        $this->_init($config);
+        $this->verifyRequiredConfig($config);
+        $this->init($config);
     }
 
     /**
@@ -31,7 +34,7 @@ class PasswordGenerator
      */
     public function getWords()
     {
-        return $this->_words;
+        return $this->words;
     }
 
     /**
@@ -39,7 +42,7 @@ class PasswordGenerator
      */
     public function setWords($words)
     {
-        $this->_words = $words;
+        $this->words = $words;
     }
 
     /**
@@ -47,7 +50,7 @@ class PasswordGenerator
      */
     public function getStrength()
     {
-        return $this->_strength;
+        return $this->strength;
     }
 
     /**
@@ -55,60 +58,65 @@ class PasswordGenerator
      */
     public function setStrength($strength)
     {
-        $this->_strength = $strength;
+        $this->strength = $strength;
     }
-
 
     public function getPassword()
     {
-        shuffle($this->_words);
+        shuffle($this->words);
         $words = array_slice(
-            $this->_words, 0,
-            $this->_config[self::CONFIG_MAX_WORDS]
+            $this->words,
+            0,
+            $this->config[self::CONFIG_MAX_WORDS]
         );
         $size = ceil(($this->getStrength() * count($words)) / 10);
         if ($size == 1) $size++;
 
         $selectedWords = implode('', array_slice($words, 0, $size));
 
-        foreach($this->_rules as $rule){
+        foreach ($this->rules as $rule) {
             $selectedWords = $rule->apply($selectedWords);
         }
 
         return $selectedWords;
     }
 
-    public function addRule(RuleAbstract $rule)
+    public function addRule(RuleInterface $rule)
     {
-        $this->_rules[] = $rule;
+        $this->rules[] = $rule;
     }
 
     public function clearRules()
     {
-        $this->_rules = [];
+        $this->rules = [];
     }
 
-    private function _init($config)
+    private function init($config)
     {
-        $this->_config = $config;
+        $this->config = $config;
         foreach ($config[self::CONFIG_RULES] as $rule) {
-            $this->_rules[] = new $rule($this->_config);
+            $this->rules[] = new $rule($this->config);
         }
-        $this->_words = $config[self::CONFIG_WORDS];
-        $this->_strength = $config[self::CONFIG_STRENGTH];
+        $this->words = $config[self::CONFIG_WORDS];
+        $this->strength = $config[self::CONFIG_STRENGTH];
     }
 
-    private function _verifyRequiredConfig(array $config)
+    private function verifyRequiredConfig(array $config)
     {
         $configItems = [self::CONFIG_RULES,self::CONFIG_MAX_WORDS,
-            self::CONFIG_STRENGTH,self::CONFIG_WORDS,self::CONFIG_SPECIAL_CHARS];
+            self::CONFIG_STRENGTH,self::CONFIG_WORDS,
+            self::CONFIG_SPECIAL_CHARS,self::CONFIG_COMPLEXITY];
+
         foreach ($configItems as $item) {
-
             if (!array_key_exists($item, $config)) {
-                throw new \Exception("The item '{$item}' is required in config file.");
+                throw new ConfigParserException($item);
             }
+        }
 
+        if (!in_array($config[self::CONFIG_COMPLEXITY], range(1, 10))
+            || !in_array($config[self::CONFIG_STRENGTH], range(1, 10))
+        ) {
+            throw new ConfigComplexityOutOfBound;
         }
     }
 }
-

@@ -13,6 +13,7 @@ class PasswordTest extends TestCase
         $this->passwordGenerator = new PasswordGenerator(require_once 'config.php');
         $password = $this->passwordGenerator->getPassword();
 
+        // just to be able to see the password in travis ci
         print_r("\n" . $password);
 
         $this->assertTrue(strlen($password) >= self::PASSWORD_LENGTH_CONSTRAINT,
